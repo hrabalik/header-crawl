@@ -1,7 +1,49 @@
 module: header-crawl
 
-define method main (name :: <string>, arguments :: <vector>)
-  format-out("Hello, world!\n");
+define method read-file (filename :: <string>) => (lines :: <sequence>)
+    if (~file-exists?(filename))
+        format-out("File \"%s\" doesn't exist.\n", filename);
+        #[] // return empty sequence
+    else
+        let properties = file-properties(filename);
+        if (~element(properties, #"readable?"))
+            format-out("File \"%s\" is not readable.\n", filename);
+            #[] // return empty sequence
+        else
+            let result = make(<stretchy-vector>);
+            let file-stream = make(<file-stream>, locator: filename);
+
+            block (done)
+                while (#t)
+                    let (line, eol) = read-line(file-stream,
+                                                on-end-of-stream: "");
+                    add!(result, line);
+                    if (~eol) done(); end;
+                end;
+            cleanup
+                file-stream.close;
+            end;
+
+            result // return stretchy vector of lines
+        end;
+    end;
 end;
 
-main(application-name(), application-arguments());
+define method main (args :: <vector>)
+    if (args.size == 0)
+        format-out("Welcome to header-crawl!\n");
+        format-out("Please specify a filename to crawl.\n");
+        exit-application(1);
+    end;
+
+    let filename :: <string> = element(args, 0);
+    let lines = read-file(filename);
+
+    for (line in lines)
+        format-out("%s\n", line);
+    end;
+
+    format-out("Got %d lines.\n", lines.size);
+end;
+
+main(application-arguments());
