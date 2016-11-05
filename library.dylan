@@ -6,6 +6,13 @@ define library header-crawl
   use system;
 end library header-crawl;
 
+define module llist
+  use common-dylan;
+  export
+    <llist>, push-front, push-back,
+    <llist-iter>, data, valid?, next, prev, insert-before, insert-after
+end module llist;
+
 define module header-crawl
   use common-dylan;
   use format-out;
