@@ -10,7 +10,7 @@ define module llist
   use common-dylan;
   export
     <llist>, push-front, push-back,
-    <llist-iter>, data, valid?, next, prev, insert-before, insert-after
+    <llist-iter>, data, valid?, next, prev, insert-before, insert-after, erase;
 end module llist;
 
 define module header-crawl

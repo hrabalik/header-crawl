@@ -65,13 +65,31 @@ define method prev (i :: <llist-iter>) => (prev-iter :: <llist-iter>)
 end;
 
 define method insert-before (i :: <llist-iter>, d :: <string>)
+    assert(i.valid?);
     let new = make(<llist-node>, prev: i.node.prev, next: i.node, data: d);
     i.node.prev := new;
     if (new.prev == $nil) i.llist.head_ := new; end;
 end;
 
 define method insert-after (i :: <llist-iter>, d :: <string>)
+    assert(i.valid?);
     let new = make(<llist-node>, prev: i.node, next: i.node.next, data: d);
     i.node.next := new;
     if (new.next == $nil) i.llist.tail_ := new; end;
+end;
+
+define method erased? (i :: <llist-iter>) => (erased? :: <boolean>)
+    i.node.prev == $nil & i.node.next == $nil & i.node ~= i.llist.head_
+end;
+
+define method erase (i :: <llist-iter>)
+    assert(i.valid? & ~i.erased?);
+    let l = i.llist;
+    if (i.node == l.head_) l.head_ := i.node.next; end;
+    if (i.node == l.tail_) l.tail_ := i.node.prev; end;
+    let (prev, next) = values(i.node.prev, i.node.next);
+    if (prev ~= $nil) prev.next := i.node.next; end;
+    if (next ~= $nil) next.prev := i.node.prev; end;
+    i.node.next := $nil;
+    i.node.prev := $nil;
 end;
