@@ -28,7 +28,18 @@ define method read-file (filename :: <string>) => (lines :: <llist>)
     end;
 
     result
-end;
+end method;
+
+define method remove-empty-lines! (lines :: <llist>)
+    let i = lines.iterator;
+    while (i.valid?)
+        let j = i;
+        i := i.next;
+        if (j.data == "")
+            j.erase;
+        end;
+    end;
+end method;
 
 define method main (args :: <vector>)
     if (args.size == 0)
@@ -39,12 +50,13 @@ define method main (args :: <vector>)
 
     let filename :: <string> = element(args, 0);
     let lines = read-file(filename);
+    remove-empty-lines!(lines);
 
     for (line in lines)
         format-out("%s\n", line);
     end;
 
     format-out("Got %d lines.\n", lines.size);
-end;
+end method;
 
 main(application-arguments());

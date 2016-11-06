@@ -9,7 +9,7 @@ end library header-crawl;
 define module llist
   use common-dylan;
   export
-    <llist>, push-front, push-back,
+    <llist>, push-front, push-back, iterator,
     <llist-iter>, data, valid?, next, prev, insert-before, insert-after, erase;
 end module llist;
 

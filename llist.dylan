@@ -66,6 +66,10 @@ define class <llist-iter> (<object>)
     constant slot node :: <llist-node-base>, required-init-keyword: node:;
 end class;
 
+define method iterator (l :: <llist>) => (iterator :: <llist-iter>)
+    make(<llist-iter>, llist: l, node: l.head_)
+end method;
+
 define method data (i :: <llist-iter>) => (data :: <string>)
     i.node.data
 end method;
@@ -107,9 +111,9 @@ define method erase (i :: <llist-iter>)
     let l = i.llist;
     if (i.node == l.head_) l.head_ := i.node.next; end;
     if (i.node == l.tail_) l.tail_ := i.node.prev; end;
-    let (prev, next) = values(i.node.prev, i.node.next);
-    if (prev ~= $nil) prev.next := i.node.next; end;
-    if (next ~= $nil) next.prev := i.node.prev; end;
+    let (p, n) = values(i.node.prev, i.node.next);
+    if (p ~= $nil) p.next := i.node.next; end;
+    if (n ~= $nil) n.prev := i.node.prev; end;
     i.node.next := $nil;
     i.node.prev := $nil;
 end method;
