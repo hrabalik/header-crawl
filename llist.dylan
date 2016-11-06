@@ -16,11 +16,11 @@ define class <llist> (<collection>)
 end class;
 
 define method add! (l :: <llist>, d :: <string>) => (l :: <llist>)
+    let new = make(<llist-node>, prev: l.tail_, next: $nil, data: d);
     if (l.empty?)
-        l.head_ := make(<llist-node>, prev: $nil, next: $nil, data: d);
-        l.tail_ := l.head_;
+        l.head_ := new;
+        l.tail_ := new;
     else
-        let new = make(<llist-node>, prev: l.tail_, next: $nil, data: d);
         l.tail_.next := new;
         l.tail_ := new;
     end;
