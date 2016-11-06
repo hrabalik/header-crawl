@@ -10,7 +10,7 @@ define class <llist-node> (<llist-node-base>)
     constant slot data :: <string>, required-init-keyword: data:;
 end class;
 
-define class <llist> (<object>)
+define class <llist> (<collection>)
     slot head_ :: <llist-node-base>, init-value: $nil;
     slot tail_ :: <llist-node-base>, init-value: $nil;
 end class;
@@ -39,6 +39,30 @@ define method push-back (l :: <llist>, d :: <string>)
         l.tail_.next := new;
         l.tail_ := new;
     end;
+end method;
+
+define method forward-iteration-protocol (l :: <llist>) =>
+    (
+        initial-state :: <llist-node-base>,
+        limit :: <llist-node-nil>,
+        next-state :: <function>,
+        finished-state? :: <function>,
+        current-key :: <function>,
+        current-element :: <function>,
+        current-element-setter :: <function>,
+        copy-state :: <function>
+    )
+    values
+    (
+        l.head_,
+        $nil,
+        method(l, n) n.next end,
+        method(l, n, _) n == $nil end,
+        method(l, n) 0 end,
+        method(l, n) n.data end,
+        method(v, l, n) end,
+        method(l, n) n end
+    )
 end method;
 
 define class <llist-iter> (<object>)
