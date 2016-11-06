@@ -18,4 +18,5 @@ define module header-crawl
   use format-out;
   use streams;
   use file-system;
+  use llist;
 end module header-crawl;

@@ -1,23 +1,22 @@
 module: header-crawl
 
-define method read-file (filename :: <string>) => (lines :: <sequence>)
+define method read-file (filename :: <string>) => (lines :: <llist>)
+    let result = make(<llist>);
+
     if (~file-exists?(filename))
         format-out("File \"%s\" doesn't exist.\n", filename);
-        #[] // return empty sequence
     else
         let properties = file-properties(filename);
         if (~element(properties, #"readable?"))
             format-out("File \"%s\" is not readable.\n", filename);
-            #[] // return empty sequence
         else
-            let result = make(<stretchy-vector>);
             let file-stream = make(<file-stream>, locator: filename);
 
             block (done)
                 while (#t)
                     let (line, eol) = read-line(file-stream,
                                                 on-end-of-stream: "");
-                    add!(result, line);
+                    push-back(result, line); //add!(result, line);
                     if (~eol) done(); end;
                 end;
             cleanup
@@ -27,6 +26,8 @@ define method read-file (filename :: <string>) => (lines :: <sequence>)
             result // return stretchy vector of lines
         end;
     end;
+
+    result
 end;
 
 define method main (args :: <vector>)
