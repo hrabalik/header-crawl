@@ -15,10 +15,6 @@ define class <llist> (<collection>)
     slot tail_ :: <llist-node-base>, init-value: $nil;
 end class;
 
-define method empty? (l :: <llist>) => (empty? :: <boolean>)
-    l.head_ == $nil
-end method;
-
 define method push-front (l :: <llist>, d :: <string>)
     if (l.empty?)
         l.head_ := make(<llist-node>, prev: $nil, next: $nil, data: d);
