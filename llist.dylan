@@ -8,16 +8,16 @@ define class <llist-node> (<llist-node-base>)
     slot prev :: <llist-node-base>, required-init-keyword: prev:;
     slot next :: <llist-node-base>, required-init-keyword: next:;
     constant slot data :: <string>, required-init-keyword: data:;
-end;
+end class;
 
 define class <llist> (<object>)
     slot head_ :: <llist-node-base>, init-value: $nil;
     slot tail_ :: <llist-node-base>, init-value: $nil;
-end;
+end class;
 
 define method empty? (l :: <llist>) => (empty? :: <boolean>)
     l.head_ == $nil
-end;
+end method;
 
 define method push-front (l :: <llist>, d :: <string>)
     if (l.empty?)
@@ -28,7 +28,7 @@ define method push-front (l :: <llist>, d :: <string>)
         l.head_.prev := new;
         l.head_ := new;
     end;
-end;
+end method;
 
 define method push-back (l :: <llist>, d :: <string>)
     if (l.empty?)
@@ -39,48 +39,48 @@ define method push-back (l :: <llist>, d :: <string>)
         l.tail_.next := new;
         l.tail_ := new;
     end;
-end;
+end method;
 
 define class <llist-iter> (<object>)
     constant slot llist :: <llist>, required-init-keyword: llist:;
     constant slot node :: <llist-node-base>, required-init-keyword: node:;
-end;
+end class;
 
 define method data (i :: <llist-iter>) => (data :: <string>)
     i.node.data
-end;
+end method;
 
 define method valid? (i :: <llist-iter>) => (valid? :: <boolean>)
     i.node ~= $nil
-end;
+end method;
 
 define method next (i :: <llist-iter>) => (next-iter :: <llist-iter>)
     assert(i.valid?);
     make(<llist-iter>, llist: i.llist, node: i.node.next)
-end;
+end method;
 
 define method prev (i :: <llist-iter>) => (prev-iter :: <llist-iter>)
     assert(i.valid?);
     make(<llist-iter>, llist: i.llist, node: i.node.prev)
-end;
+end method;
 
 define method insert-before (i :: <llist-iter>, d :: <string>)
     assert(i.valid?);
     let new = make(<llist-node>, prev: i.node.prev, next: i.node, data: d);
     i.node.prev := new;
     if (new.prev == $nil) i.llist.head_ := new; end;
-end;
+end method;
 
 define method insert-after (i :: <llist-iter>, d :: <string>)
     assert(i.valid?);
     let new = make(<llist-node>, prev: i.node, next: i.node.next, data: d);
     i.node.next := new;
     if (new.next == $nil) i.llist.tail_ := new; end;
-end;
+end method;
 
 define method erased? (i :: <llist-iter>) => (erased? :: <boolean>)
     i.node.prev == $nil & i.node.next == $nil & i.node ~= i.llist.head_
-end;
+end method;
 
 define method erase (i :: <llist-iter>)
     assert(i.valid? & ~i.erased?);
@@ -92,4 +92,4 @@ define method erase (i :: <llist-iter>)
     if (next ~= $nil) next.prev := i.node.prev; end;
     i.node.next := $nil;
     i.node.prev := $nil;
-end;
+end method;
