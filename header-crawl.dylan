@@ -16,7 +16,7 @@ define method read-file (filename :: <string>) => (lines :: <llist>)
                 while (#t)
                     let (line, eol) = read-line(file-stream,
                                                 on-end-of-stream: "");
-                    push-back(result, line); //add!(result, line);
+                    add!(result, line);
                     if (~eol) done(); end;
                 end;
             cleanup

@@ -15,18 +15,7 @@ define class <llist> (<collection>)
     slot tail_ :: <llist-node-base>, init-value: $nil;
 end class;
 
-define method push-front (l :: <llist>, d :: <string>)
-    if (l.empty?)
-        l.head_ := make(<llist-node>, prev: $nil, next: $nil, data: d);
-        l.tail_ := l.head_;
-    else
-        let new = make(<llist-node>, prev: $nil, next: l.head_, data: d);
-        l.head_.prev := new;
-        l.head_ := new;
-    end;
-end method;
-
-define method push-back (l :: <llist>, d :: <string>)
+define method add! (l :: <llist>, d :: <string>) => (l :: <llist>)
     if (l.empty?)
         l.head_ := make(<llist-node>, prev: $nil, next: $nil, data: d);
         l.tail_ := l.head_;
@@ -35,6 +24,7 @@ define method push-back (l :: <llist>, d :: <string>)
         l.tail_.next := new;
         l.tail_ := new;
     end;
+    l
 end method;
 
 define method forward-iteration-protocol (l :: <llist>) =>
