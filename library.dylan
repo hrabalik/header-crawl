@@ -6,6 +6,7 @@ define library header-crawl
   use system;
   use regular-expressions;
   use strings;
+  use collections;
 end library header-crawl;
 
 define module llist
@@ -23,4 +24,5 @@ define module header-crawl
   use llist;
   use strings;
   use regular-expressions;
+  use table-extensions;
 end module header-crawl;

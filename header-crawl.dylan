@@ -89,8 +89,10 @@ end method;
 
 define constant $include-regex :: <regex> = compile-regex(
     "^#include \"([a-zA-Z0-9._\\- \\\\/]*)\".*$");
-define method crawl (file :: <string>) => (source :: <llist>)
-    if (#t) // TODO add visited check
+define method crawl (file :: <string>, visited :: <string-table>)
+        => (source :: <llist>)
+    if (element(visited, file, default: #f) == #f)
+        element-setter(#t, visited, file);
         format-out("Entering: '%s'\n", file);
         force-out();
         let lines = read-file(file);
@@ -102,7 +104,7 @@ define method crawl (file :: <string>) => (source :: <llist>)
             let included-file = extract(i.data, $include-regex);
             if (included-file ~= "")
                 let included-path = join-paths(file, included-file);
-                crawl(included-path);
+                crawl(included-path, visited);
             end;
             i := i.next;
         end;
@@ -121,7 +123,7 @@ define method main (args :: <vector>)
     end;
 
     let filename :: <string> = element(args, 0);
-    let lines = crawl(filename);
+    let lines = crawl(filename, make(<string-table>));
 
     for (line in lines)
         format-out("%s\n", line);
