@@ -75,6 +75,44 @@ define method remove-include-guard! (lines :: <llist>)
     end;
 end;
 
+define constant $strip-file-regex :: <regex> = compile-regex("^(.*/).*$");
+define constant $strip-up-regex :: <regex> = compile-regex("^\\.\\./(.*)$");
+define constant $strip-dir-regex :: <regex> = compile-regex("^(.*/).*/$");
+define method join-paths(path :: <string>, rel :: <string>) => (out :: <string>)
+    let dir = extract(path, $strip-file-regex);
+    while (extract(rel, $strip-up-regex) ~= "")
+        rel := extract(rel, $strip-up-regex);
+        dir := extract(dir, $strip-dir-regex);
+    end;
+    concatenate(dir, rel)
+end method;
+
+define constant $include-regex :: <regex> = compile-regex(
+    "^#include \"([a-zA-Z0-9._\\- \\\\/]*)\".*$");
+define method crawl (file :: <string>) => (source :: <llist>)
+    if (#t) // TODO add visited check
+        format-out("Entering: '%s'\n", file);
+        force-out();
+        let lines = read-file(file);
+        remove-boring-lines!(lines);
+        remove-include-guard!(lines);
+
+        let i = lines.head-iterator;
+        while (i.valid?)
+            let included-file = extract(i.data, $include-regex);
+            if (included-file ~= "")
+                let included-path = join-paths(file, included-file);
+                crawl(included-path);
+            end;
+            i := i.next;
+        end;
+
+        lines
+    else
+        make(<llist>)
+    end;
+end;
+
 define method main (args :: <vector>)
     if (args.size == 0)
         format-out("Welcome to header-crawl!\n");
@@ -83,9 +121,7 @@ define method main (args :: <vector>)
     end;
 
     let filename :: <string> = element(args, 0);
-    let lines = read-file(filename);
-    remove-boring-lines!(lines);
-    remove-include-guard!(lines);
+    let lines = crawl(filename);
 
     for (line in lines)
         format-out("%s\n", line);
