@@ -4,6 +4,7 @@ define library header-crawl
   use common-dylan;
   use io;
   use system;
+  use regular-expressions;
 end library header-crawl;
 
 define module llist
@@ -19,4 +20,5 @@ define module header-crawl
   use streams;
   use file-system;
   use llist;
+  use regular-expressions;
 end module header-crawl;

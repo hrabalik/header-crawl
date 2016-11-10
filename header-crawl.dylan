@@ -30,12 +30,22 @@ define method read-file (filename :: <string>) => (lines :: <llist>)
     result
 end method;
 
-define method remove-empty-lines! (lines :: <llist>)
+define constant $comment-regex :: <regex> = compile-regex("^\\s*//.*");
+define method is-comment? (line :: <string>) => (is-comment? :: <boolean>)
+    let match :: false-or(<regex-match>) = regex-search($comment-regex, line);
+    if (match) #t else #f; end;
+end method;
+
+define method is-bad? (line :: <string>) => (is-bad? :: <boolean>)
+    line == "" | line.is-comment?
+end method;
+
+define method remove-bad-lines! (lines :: <llist>)
     let i = lines.iterator;
     while (i.valid?)
         let j = i;
         i := i.next;
-        if (j.data == "")
+        if (j.data.is-bad?)
             j.erase;
         end;
     end;
@@ -50,7 +60,7 @@ define method main (args :: <vector>)
 
     let filename :: <string> = element(args, 0);
     let lines = read-file(filename);
-    remove-empty-lines!(lines);
+    remove-bad-lines!(lines);
 
     for (line in lines)
         format-out("%s\n", line);
