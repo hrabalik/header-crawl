@@ -104,9 +104,14 @@ define method crawl (file :: <string>, visited :: <string-table>)
             let included-file = extract(i.data, $include-regex);
             if (included-file ~= "")
                 let included-path = join-paths(file, included-file);
-                crawl(included-path, visited);
+                let included-lines = crawl(included-path, visited);
+                insert-before(i, included-lines);
+                let to-erase = i;
+                i := i.next;
+                erase(to-erase);
+            else
+                i := i.next;
             end;
-            i := i.next;
         end;
 
         lines
