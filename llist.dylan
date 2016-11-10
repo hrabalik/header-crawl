@@ -56,8 +56,12 @@ define class <llist-iter> (<object>)
     constant slot node :: <llist-node-base>, required-init-keyword: node:;
 end class;
 
-define method iterator (l :: <llist>) => (iterator :: <llist-iter>)
+define method head-iterator (l :: <llist>) => (iterator :: <llist-iter>)
     make(<llist-iter>, llist: l, node: l.head_)
+end method;
+
+define method tail-iterator (l :: <llist>) => (iterator :: <llist-iter>)
+    make(<llist-iter>, llist: l, node: l.tail_)
 end method;
 
 define method data (i :: <llist-iter>) => (data :: <string>)
