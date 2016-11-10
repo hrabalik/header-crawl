@@ -64,8 +64,12 @@ define method data (i :: <llist-iter>) => (data :: <string>)
     i.node.data
 end method;
 
+define method erased? (i :: <llist-iter>) => (erased? :: <boolean>)
+    i.node.prev == $nil & i.node.next == $nil & i.node ~= i.llist.head_
+end method;
+
 define method valid? (i :: <llist-iter>) => (valid? :: <boolean>)
-    i.node ~= $nil
+    i.node ~= $nil & ~i.erased?
 end method;
 
 define method next (i :: <llist-iter>) => (next-iter :: <llist-iter>)
@@ -92,12 +96,31 @@ define method insert-after (i :: <llist-iter>, d :: <string>)
     if (new.next == $nil) i.llist.tail_ := new; end;
 end method;
 
-define method erased? (i :: <llist-iter>) => (erased? :: <boolean>)
-    i.node.prev == $nil & i.node.next == $nil & i.node ~= i.llist.head_
+define method insert-before (i :: <llist-iter>, src-list :: <llist>)
+    assert(i.valid?);
+    if (~src-list.empty?)
+        let dst-list = i.llist;
+        let before = i.node.prev;
+        let after = i.node;
+        let first = src-list.head_;
+        let last = src-list.tail_;
+
+        if (before == $nil)
+            dst-list.head_ := first;
+        else
+            before.next := first;
+        end;
+
+        after.prev := last;
+        first.prev := before;
+        last.next := after;
+    end;
+    src-list.head_ := $nil;
+    src-list.tail_ := $nil;
 end method;
 
 define method erase (i :: <llist-iter>)
-    assert(i.valid? & ~i.erased?);
+    assert(i.valid?);
     let l = i.llist;
     if (i.node == l.head_) l.head_ := i.node.next; end;
     if (i.node == l.tail_) l.tail_ := i.node.prev; end;
